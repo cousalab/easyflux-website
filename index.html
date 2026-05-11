@@ -362,5 +362,19 @@
     </footer>
 
     <script type="module" src="/src/main.js"></script>
+    <!-- Netlify Identity widget — required for the /admin/ panel to work -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <script>
+      // After invited users confirm their email, redirect them to the admin panel
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on("init", (user) => {
+          if (!user) {
+            window.netlifyIdentity.on("login", () => {
+              document.location.href = "/admin/";
+            });
+          }
+        });
+      }
+    </script>
   </body>
 </html>
