@@ -1,18 +1,18 @@
 {
-  "hero_headline_1": "Better healthcare,",
-  "hero_headline_2": "built for the way things really work.",
   "hero_body": "We help clinics, hospitals, and healthcare providers across Nigeria, West Africa, and beyond run more smoothly, adopt the right digital tools, and build the skills to keep improving long after we've finished our work.",
-  "hero_image": "/hero.jpg",
-  "about_heading": "About EasyFlux",
+  "hero_headline_1": "Test edit:",
+  "hero_headline_2": "built for the way things really work.",
+  "readiness_heading": "Digital Health Readiness Check",
   "about_tagline_1": "Healthcare Innovation.",
   "about_tagline_2": "Healthier Africa.",
+  "about_heading": "About EasyFlux",
   "about_p1": "EasyFlux Consulting is a healthcare management consultancy. We work with clinics, hospitals, healthcare providers, and public health bodies to find what's slowing them down, bring in tools and systems that fit, and improve the way care reaches patients.",
   "about_p2": "We bring together international consulting experience and a close understanding of how healthcare actually runs in emerging markets. We know the constraints, we know what's possible, and we know what tends to work on the ground.",
   "about_p3": "Our team brings together medical professionals, IT specialists, data managers, and people who have spent years leading change in healthcare settings. We are proficient in Waterfall, Agile, and Wagile delivery, and we choose the approach that fits the work.",
+  "hero_image": "/hero.jpg",
   "africa_image": "/africa.png",
-  "readiness_heading": "Digital Health Readiness Check",
-  "readiness_question": "How ready is your organisation to take on digital health tools and actually get value from them?",
   "readiness_body": "Our free Digital Health Readiness Check is a short self-assessment that takes about ten minutes. At the end, you get a personal readiness profile that shows where you're already strong and where a bit of focused attention will make the biggest difference.",
-  "contact_email": "info@easyfluxconsulting.com",
-  "contact_linkedin": "https://linkedin.com/company/easyflux-consulting"
+  "readiness_question": "How ready is your organisation to take on digital health tools and actually get value from them?",
+  "contact_linkedin": "https://linkedin.com/company/easyflux-consulting",
+  "contact_email": "info@easyfluxconsulting.com"
 }
