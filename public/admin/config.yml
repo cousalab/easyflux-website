@@ -15,31 +15,26 @@ logo_url: https://easyflux-consulting.netlify.app/favicon.svg
 collections:
   - name: "site"
     label: "Site content"
-    description: "Edit the main pieces of text on your homepage. Save changes to publish."
+    description: "Edit the main pieces of text on your homepage. Save to publish."
     files:
-      - file: "content/site.yml"
+      - file: "public/content/site.json"
         label: "Homepage"
         name: "homepage"
+        format: "json"
         fields:
-          - { label: "Hero — line 1 (navy)", name: "hero_headline_1", widget: "string", default: "Better healthcare," }
-          - { label: "Hero — line 2 (teal)", name: "hero_headline_2", widget: "string", default: "built for the way things really work." }
+          - { label: "Hero — line 1 (navy)", name: "hero_headline_1", widget: "string" }
+          - { label: "Hero — line 2 (teal)", name: "hero_headline_2", widget: "string" }
           - { label: "Hero — body paragraph", name: "hero_body", widget: "text" }
-          - { label: "Hero photo", name: "hero_image", widget: "image", required: false, hint: "Upload a new photo to replace the hero image. Recommended size 900×675 px or similar landscape." }
-          - { label: "About — heading", name: "about_heading", widget: "string", default: "About EasyFlux" }
+          - { label: "Hero photo", name: "hero_image", widget: "image", required: false, hint: "Upload a new photo. Landscape orientation works best (about 4:3 ratio)." }
+          - { label: "About — heading", name: "about_heading", widget: "string" }
+          - { label: "About — tagline line 1 (teal)", name: "about_tagline_1", widget: "string" }
+          - { label: "About — tagline line 2 (coral italic)", name: "about_tagline_2", widget: "string" }
           - { label: "About — paragraph 1", name: "about_p1", widget: "text" }
           - { label: "About — paragraph 2", name: "about_p2", widget: "text" }
           - { label: "About — paragraph 3", name: "about_p3", widget: "text" }
-          - { label: "Africa map image", name: "africa_image", widget: "image", required: false, hint: "Upload a map of Africa to display in the About section." }
-          - { label: "Contact — email", name: "contact_email", widget: "string", default: "info@easyfluxconsulting.com" }
-          - { label: "Contact — LinkedIn URL", name: "contact_linkedin", widget: "string", default: "https://linkedin.com/company/easyflux-consulting" }
-
-  - name: "uploads"
-    label: "Image library"
-    description: "Upload, browse and delete images used on the site."
-    folder: "public/uploads"
-    create: true
-    media_folder: ""
-    public_folder: ""
-    extension: "md"
-    fields:
-      - { label: "Caption", name: "caption", widget: "string", required: false }
+          - { label: "About — Africa image", name: "africa_image", widget: "image", required: false }
+          - { label: "Readiness Check — heading", name: "readiness_heading", widget: "string" }
+          - { label: "Readiness Check — question", name: "readiness_question", widget: "text" }
+          - { label: "Readiness Check — body", name: "readiness_body", widget: "text" }
+          - { label: "Contact — email", name: "contact_email", widget: "string" }
+          - { label: "Contact — LinkedIn URL", name: "contact_linkedin", widget: "string" }
