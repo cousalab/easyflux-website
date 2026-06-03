@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Risk Monitor — Cognitive Health Assessment</title>
+  <meta name="description" content="Assess and monitor your risk of developing memory loss as you age. Evidence-based questionnaire with personalized recommendations." />
+  <link rel="manifest" href="#" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --primary-dark: #3730a3;
+      --secondary: #06b6d4;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --low: #10b981;
+      --moderate: #f59e0b;
+      --high: #ef4444;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface2: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+      --shadow-lg: 0 4px 6px rgba(0,0,0,.07), 0 10px 40px rgba(0,0,0,.1);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ---- LAYOUT ---- */
+    .app { max-width: 780px; margin: 0 auto; padding: 24px 16px 80px; }
+
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ---- HEADER ---- */
+    .header {
+      text-align: center;
+      padding: 48px 24px 32px;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #06b6d4 100%);
+      border-radius: var(--radius);
+      color: white;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .header-icon { font-size: 56px; margin-bottom: 12px; position: relative; }
+    .header h1 { font-size: clamp(24px, 5vw, 36px); font-weight: 800; margin-bottom: 8px; position: relative; }
+    .header p { font-size: 16px; opacity: .85; max-width: 520px; margin: 0 auto; position: relative; }
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    /* ---- CARDS ---- */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-subtitle { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+
+    /* ---- BUTTONS ---- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .2s;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79,70,229,.3); }
+    .btn-secondary {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .btn-outline:hover { background: var(--primary); color: white; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-lg { padding: 16px 36px; font-size: 17px; border-radius: 12px; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+    .btn-full { width: 100%; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; transform: none !important; }
+
+    /* ---- PROGRESS ---- */
+    .progress-bar {
+      background: var(--surface2);
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+      margin-bottom: 8px;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: 99px;
+      transition: width .4s ease;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    /* ---- FORM ELEMENTS ---- */
+    .form-group { margin-bottom: 24px; }
+    .form-label {
+      display: block;
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .form-hint { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+    .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 10px; }
+    .radio-option, .checkbox-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all .15s;
+      background: var(--surface);
+    }
+    .radio-option:hover, .checkbox-option:hover {
+      border-color: var(--primary-light);
+      background: #f5f3ff;
+    }
+    .radio-option.selected, .checkbox-option.selected {
+      border-color: var(--primary);
+      background: #eef2ff;
+    }
+    .radio-option input, .checkbox-option input { display: none; }
+    .option-indicator {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+      transition: all .15s;
+    }
+    .checkbox-option .option-indicator { border-radius: 6px; }
+    .radio-option.selected .option-indicator,
+    .checkbox-option.selected .option-indicator {
+      border-color: var(--primary);
+      background: var(--primary);
+    }
+    .radio-option.selected .option-indicator::after {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: white;
+    }
+    .checkbox-option.selected .option-indicator::after {
+      content: '✓';
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .option-text { font-size: 14px; line-height: 1.5; }
+    .option-label { font-weight: 500; }
+    .option-desc { color: var(--text-muted); font-size: 13px; }
+
+    .scale-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .scale-btn {
+      flex: 1;
+      min-width: 40px;
+      padding: 12px 8px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      cursor: pointer;
+      text-align: center;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all .15s;
+      color: var(--text);
+    }
+    .scale-btn:hover { border-color: var(--primary-light); background: #f5f3ff; }
+    .scale-btn.selected { border-color: var(--primary); background: var(--primary); color: white; }
+
+    select, input[type=number] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color .15s;
+      appearance: none;
+    }
+    select:focus, input[type=number]:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    .select-wrapper { position: relative; }
+    .select-wrapper::after {
+      content: '▾';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* ---- SECTION TABS ---- */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .section-step {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--primary);
+    }
+
+    /* ---- RESULTS ---- */
+    .risk-gauge {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 24px;
+    }
+    .risk-gauge canvas { width: 100%; height: 100%; }
+    .risk-gauge-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -48%);
+      text-align: center;
+    }
+    .risk-score-num { font-size: 42px; font-weight: 800; line-height: 1; }
+    .risk-score-label { font-size: 13px; color: var(--text-muted); }
+
+    .risk-level-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      border-radius: 99px;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: .3px;
+    }
+    .risk-low { background: #d1fae5; color: #065f46; }
+    .risk-moderate { background: #fef3c7; color: #92400e; }
+    .risk-high { background: #fee2e2; color: #991b1b; }
+
+    .factor-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .factor-bar-label { width: 160px; font-size: 13px; font-weight: 500; flex-shrink: 0; }
+    .factor-bar-track {
+      flex: 1;
+      height: 10px;
+      background: var(--surface2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .factor-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .8s ease;
+    }
+    .factor-bar-val { width: 36px; text-align: right; font-size: 13px; font-weight: 600; color: var(--text-muted); }
+
+    .recommendation-item {
+      display: flex;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      border-left: 4px solid;
+    }
+    .rec-icon { font-size: 24px; flex-shrink: 0; }
+    .rec-title { font-weight: 700; font-size: 14px; margin-bottom: 3px; }
+    .rec-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+    .rec-priority-high { background: #fff7ed; border-color: #f97316; }
+    .rec-priority-medium { background: #fffbeb; border-color: #f59e0b; }
+    .rec-priority-low { background: #f0fdf4; border-color: #22c55e; }
+
+    /* ---- HISTORY ---- */
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .history-item:hover { border-color: var(--primary); background: #f5f3ff; }
+    .history-score {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .history-info { flex: 1; }
+    .history-date { font-size: 13px; color: var(--text-muted); }
+    .history-label { font-weight: 600; font-size: 15px; }
+
+    /* ---- NAV ---- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      z-index: 100;
+      box-shadow: 0 -4px 16px rgba(0,0,0,.06);
+    }
+    .nav-btn {
+      flex: 1;
+      max-width: 120px;
+      padding: 10px 8px 12px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      text-align: center;
+      color: var(--text-muted);
+      transition: color .15s;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .nav-btn .nav-icon { font-size: 22px; display: block; margin-bottom: 2px; }
+    .nav-btn.active { color: var(--primary); }
+
+    /* ---- TIPS SECTION ---- */
+    .tip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .tip-card {
+      padding: 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .tip-card-icon { font-size: 28px; margin-bottom: 10px; }
+    .tip-card-title { font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+    .tip-card-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ---- DISCLAIMER ---- */
+    .disclaimer {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #92400e;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    /* ---- MISC ---- */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+    .text-center { text-align: center; }
+    .text-muted { color: var(--text-muted); }
+    .font-bold { font-weight: 700; }
+    .mt-4 { margin-top: 16px; }
+    .mt-6 { margin-top: 24px; }
+    .mb-4 { margin-bottom: 16px; }
+    .flex { display: flex; }
+    .gap-3 { gap: 12px; }
+    .gap-4 { gap: 16px; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .tag-blue { background: #dbeafe; color: #1d4ed8; }
+    .tag-green { background: #d1fae5; color: #065f46; }
+    .tag-orange { background: #ffedd5; color: #9a3412; }
+
+    /* ---- PRINT ---- */
+    @media print {
+      .bottom-nav, .no-print { display: none !important; }
+      .screen { display: block !important; }
+      body { background: white; }
+      .app { max-width: 100%; padding: 0; }
+      #screen-home, #screen-assess, #screen-history, #screen-tips { display: none !important; }
+      #screen-results { display: block !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== HOME SCREEN ===== -->
+  <div id="screen-home" class="screen active">
+    <div class="header">
+      <div class="header-icon">🧠</div>
+      <div class="badge">Evidence-Based Tool</div>
+      <h1>Memory Risk Monitor</h1>
+      <p>Assess your personal risk factors for age-related memory loss and get actionable recommendations to protect your cognitive health.</p>
+    </div>
+
+    <div class="disclaimer">
+      <span style="font-size:18px;flex-shrink:0">⚠️</span>
+      <span><strong>Important:</strong> This tool is for educational purposes only and does not provide medical diagnosis. Always consult a qualified healthcare professional for medical advice.</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎯 What this assessment covers</div>
+      <div class="card-subtitle">Based on peer-reviewed research and clinical guidelines</div>
+      <div class="grid-2">
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:#f8fafc;border-radius:8px;">
+          <span style="font-size:20px">👤</span>
+          <div><div class="font-bold" style="font-size:13px">Demographics</div><div style="font-size:12px;color:var(--text-muted)">Age, sex, education</div></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:#f8fafc;border-radius:8px;">
+          <span style="font-size:20px">🧬</span>
+          <div><div class="font-bold" style="font-size:13px">Family History</div><div style="font-size:12px;color:var(--text-muted)">Genetic risk factors</div></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:#f8fafc;border-radius:8px;">
+          <span style="font-size:20px">❤️</span>
+          <div><div class="font-bold" style="font-size:13px">Cardiovascular</div><div style="font-size:12px;color:var(--text-muted)">Heart & vascular health</div></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:#f8fafc;border-radius:8px;">
+          <span style="font-size:20px">🏃</span>
+          <div><div class="font-bold" style="font-size:13px">Lifestyle</div><div style="font-size:12px;color:var(--text-muted)">Exercise, diet, sleep</div></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:#f8fafc;border-radius:8px;">
+          <span style="font-size:20px">🧩</span>
+          <div><div class="font-bold" style="font-size:13px">Cognitive Activity</div><div style="font-size:12px;color:var(--text-muted)">Mental stimulation</div></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:#f8fafc;border-radius:8px;">
+          <span style="font-size:20px">😊</span>
+          <div><div class="font-bold" style="font-size:13px">Mental Health</div><div style="font-size:12px;color:var(--text-muted)">Mood, stress, social life</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="background:linear-gradient(135deg,#eef2ff,#f0fdf4);border-color:#c7d2fe;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div style="font-size:40px">⏱️</div>
+        <div>
+          <div class="font-bold" style="font-size:16px;">5 minutes • 100% private</div>
+          <div style="font-size:14px;color:var(--text-muted);">All data stays on your device. No account needed. Results can be saved locally and printed.</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="last-assessment-banner" style="display:none" class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <div>
+          <div class="font-bold">Previous assessment found</div>
+          <div id="last-assessment-date" class="text-muted" style="font-size:14px;"></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" onclick="showScreen('history')">View History</button>
+          <button class="btn btn-primary btn-sm" onclick="startAssessment()">Reassess</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <button class="btn btn-primary btn-lg" onclick="startAssessment()">
+        <span>🚀</span> Start Assessment
+      </button>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:12px;">Free · No signup · Works offline</div>
+    </div>
+  </div>
+
+  <!-- ===== ASSESSMENT SCREEN ===== -->
+  <div id="screen-assess" class="screen">
+    <div id="section-header-area"></div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <div class="progress-label">
+      <span id="progress-text">Section 1 of 6</span>
+      <span id="progress-pct">0%</span>
+    </div>
+
+    <div id="section-container"></div>
+
+    <div style="display:flex;justify-content:space-between;gap:12px;margin-top:8px;" class="no-print">
+      <button class="btn btn-secondary" id="btn-back" onclick="prevSection()">← Back</button>
+      <button class="btn btn-primary" id="btn-next" onclick="nextSection()">Next →</button>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS SCREEN ===== -->
+  <div id="screen-results" class="screen">
+    <div class="header" id="results-header">
+      <div class="header-icon">📊</div>
+      <h1>Your Risk Assessment</h1>
+      <p id="results-subtitle">Based on your responses</p>
+    </div>
+
+    <div class="card text-center">
+      <div class="card-title" style="justify-content:center">Risk Score</div>
+      <canvas id="gauge-canvas" width="200" height="110" style="max-width:260px;margin:0 auto;display:block;"></canvas>
+      <div id="risk-score-display" style="font-size:52px;font-weight:800;margin:8px 0;"></div>
+      <div id="risk-level-display"></div>
+      <p id="risk-summary" style="margin-top:12px;font-size:14px;color:var(--text-muted);max-width:500px;margin-left:auto;margin-right:auto;"></p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📈 Risk Factor Breakdown</div>
+      <div class="card-subtitle">How each area contributes to your score</div>
+      <div id="factor-breakdown"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">💡 Personalized Recommendations</div>
+      <div class="card-subtitle">Evidence-based actions ranked by impact</div>
+      <div id="recommendations"></div>
+    </div>
+
+    <div class="card no-print">
+      <div class="card-title">💾 Save & Export</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;">
+        <button class="btn btn-primary btn-sm" onclick="saveResult()">💾 Save to History</button>
+        <button class="btn btn-secondary btn-sm" onclick="printReport()">🖨️ Print / Save PDF</button>
+        <button class="btn btn-outline btn-sm" onclick="shareResults()">📋 Copy Summary</button>
+      </div>
+      <div id="save-confirmation" style="display:none;margin-top:10px;padding:10px;background:#d1fae5;border-radius:8px;font-size:13px;color:#065f46;font-weight:600;">✅ Saved to history!</div>
+    </div>
+
+    <div class="text-center mt-4 no-print">
+      <button class="btn btn-outline" onclick="startAssessment()">🔄 Retake Assessment</button>
+    </div>
+  </div>
+
+  <!-- ===== HISTORY SCREEN ===== -->
+  <div id="screen-history" class="screen">
+    <div class="header" style="padding:32px 24px 24px;">
+      <div class="header-icon" style="font-size:40px;">📅</div>
+      <h1 style="font-size:26px;">Your History</h1>
+      <p>Track your cognitive health risk over time</p>
+    </div>
+
+    <div id="history-trend-card" style="display:none;" class="card">
+      <div class="card-title">📉 Trend</div>
+      <div id="history-trend-text" class="card-subtitle"></div>
+      <canvas id="trend-canvas" height="80" style="max-height:120px;"></canvas>
+    </div>
+
+    <div id="history-list"></div>
+    <div id="history-empty" style="display:none;" class="card text-center" style="padding:40px;">
+      <div style="font-size:48px;margin-bottom:12px;">📋</div>
+      <div class="font-bold" style="font-size:18px;margin-bottom:8px;">No assessments yet</div>
+      <div class="text-muted" style="margin-bottom:20px;">Complete an assessment and save your results to track your progress over time.</div>
+      <button class="btn btn-primary" onclick="startAssessment()">Start Assessment</button>
+    </div>
+  </div>
+
+  <!-- ===== TIPS SCREEN ===== -->
+  <div id="screen-tips" class="screen">
+    <div class="header" style="padding:32px 24px 24px;">
+      <div class="header-icon" style="font-size:40px;">🌟</div>
+      <h1 style="font-size:26px;">Brain Health Guide</h1>
+      <p>Evidence-based strategies to protect cognitive function</p>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🏃 Physical Activity</div>
+      <div class="card-subtitle">The most powerful modifiable risk factor</div>
+      <div class="tip-grid">
+        <div class="tip-card">
+          <div class="tip-card-icon">🚶</div>
+          <div class="tip-card-title">150 Min/Week</div>
+          <div class="tip-card-text">Aim for at least 150 minutes of moderate aerobic activity weekly. Even brisk walking counts.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">💪</div>
+          <div class="tip-card-title">Strength Training</div>
+          <div class="tip-card-text">Resistance exercise 2×/week improves brain-derived neurotrophic factor (BDNF) levels.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">🧘</div>
+          <div class="tip-card-title">Mind-Body Exercise</div>
+          <div class="tip-card-text">Yoga, tai chi, and dance combine physical and cognitive benefits.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🥦 Diet & Nutrition</div>
+      <div class="card-subtitle">The MIND diet shows up to 53% reduced Alzheimer's risk</div>
+      <div class="tip-grid">
+        <div class="tip-card">
+          <div class="tip-card-icon">🫒</div>
+          <div class="tip-card-title">Mediterranean Diet</div>
+          <div class="tip-card-text">Olive oil, fish, vegetables, legumes, and whole grains are strongly neuroprotective.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">🫐</div>
+          <div class="tip-card-title">Berries & Leafy Greens</div>
+          <div class="tip-card-text">Rich in flavonoids and antioxidants. Aim for leafy greens daily, berries twice weekly.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">🚫</div>
+          <div class="tip-card-title">Limit Processed Foods</div>
+          <div class="tip-card-text">Ultra-processed food, red meat, and saturated fats are linked to increased cognitive decline.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">😴 Sleep</div>
+      <div class="card-subtitle">Deep sleep clears amyloid plaque from the brain</div>
+      <div class="tip-grid">
+        <div class="tip-card">
+          <div class="tip-card-icon">⏰</div>
+          <div class="tip-card-title">7–9 Hours</div>
+          <div class="tip-card-text">Both too little and too much sleep are associated with faster cognitive decline.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">🌙</div>
+          <div class="tip-card-title">Sleep Consistency</div>
+          <div class="tip-card-text">Regular sleep/wake times regulate circadian rhythm and improve glymphatic clearance.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">📱</div>
+          <div class="tip-card-title">Screen-Free Bedtime</div>
+          <div class="tip-card-text">Stop screens 1 hour before bed. Blue light suppresses melatonin and disrupts deep sleep.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🧩 Cognitive Engagement</div>
+      <div class="card-subtitle">Build cognitive reserve to delay symptom onset</div>
+      <div class="tip-grid">
+        <div class="tip-card">
+          <div class="tip-card-icon">📚</div>
+          <div class="tip-card-title">Lifelong Learning</div>
+          <div class="tip-card-text">Learning new skills, languages, or instruments creates new neural pathways at any age.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">♟️</div>
+          <div class="tip-card-title">Strategic Games</div>
+          <div class="tip-card-text">Chess, crosswords, puzzles, and strategy games challenge working memory and processing.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">✍️</div>
+          <div class="tip-card-title">Journaling</div>
+          <div class="tip-card-text">Writing engages language, memory, and executive function simultaneously.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">👥 Social Connection</div>
+      <div class="card-subtitle">Social isolation doubles dementia risk</div>
+      <div class="tip-grid">
+        <div class="tip-card">
+          <div class="tip-card-icon">🤝</div>
+          <div class="tip-card-title">Regular Social Contact</div>
+          <div class="tip-card-text">Aim for meaningful social interactions daily — in-person has stronger benefits than digital.</div>
+        </div>
+        <div class="tip-card">
+          <div class="tip-card-icon">🎭</div>
+          <div class="tip-card-title">Community Groups</div>
+          <div class="tip-card-text">Clubs, volunteering, and group activities combine social and cognitive stimulation.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🩺 Medical Management</div>
+      <div class="card-subtitle">Controlling vascular risk factors is crucial</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:12px;align-items:center;padding:12px;background:#f8fafc;border-radius:8px;">
+          <span style="font-size:24px;">💊</span>
+          <div><div class="font-bold" style="font-size:13px;">Blood pressure control</div><div style="font-size:12px;color:var(--text-muted);">Hypertension in midlife is one of the strongest modifiable risk factors for dementia.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;padding:12px;background:#f8fafc;border-radius:8px;">
+          <span style="font-size:24px;">🩸</span>
+          <div><div class="font-bold" style="font-size:13px;">Manage diabetes & cholesterol</div><div style="font-size:12px;color:var(--text-muted);">Poor glycemic control damages small blood vessels supplying the brain.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;padding:12px;background:#f8fafc;border-radius:8px;">
+          <span style="font-size:24px;">👂</span>
+          <div><div class="font-bold" style="font-size:13px;">Address hearing loss</div><div style="font-size:12px;color:var(--text-muted);">Untreated hearing loss is the single largest modifiable risk factor. Use hearing aids.</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;padding:12px;background:#f8fafc;border-radius:8px;">
+          <span style="font-size:24px;">🧠</span>
+          <div><div class="font-bold" style="font-size:13px;">Treat depression</div><div style="font-size:12px;color:var(--text-muted);">Depression raises dementia risk by ~65%. Seek treatment — therapy, medication, or both.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- .app -->
+
+<!-- ===== BOTTOM NAV ===== -->
+<div class="bottom-nav no-print">
+  <button class="nav-btn active" onclick="showScreen('home')" id="nav-home">
+    <span class="nav-icon">🏠</span>Home
+  </button>
+  <button class="nav-btn" onclick="startAssessment()" id="nav-assess">
+    <span class="nav-icon">📝</span>Assess
+  </button>
+  <button class="nav-btn" onclick="showScreen('results')" id="nav-results">
+    <span class="nav-icon">📊</span>Results
+  </button>
+  <button class="nav-btn" onclick="showScreen('history')" id="nav-history">
+    <span class="nav-icon">📅</span>History
+  </button>
+  <button class="nav-btn" onclick="showScreen('tips')" id="nav-tips">
+    <span class="nav-icon">💡</span>Guide
+  </button>
+</div>
+
+<script>
+// ============================================================
+//  DATA MODEL
+// ============================================================
+const SECTIONS = [
+  {
+    id: 'demographics',
+    title: 'Demographics & Background',
+    icon: '👤',
+    color: '#4f46e5',
+    bg: '#eef2ff',
+    questions: [
+      {
+        id: 'age',
+        type: 'radio',
+        text: 'What is your current age?',
+        options: [
+          { value: 0, label: 'Under 50', desc: 'Baseline risk period' },
+          { value: 1, label: '50–59', desc: 'Early monitoring recommended' },
+          { value: 2, label: '60–69', desc: 'Increased vigilance period' },
+          { value: 3, label: '70–79', desc: 'Higher risk decade' },
+          { value: 4, label: '80 or older', desc: 'Highest age-related risk' },
+        ]
+      },
+      {
+        id: 'sex',
+        type: 'radio',
+        text: 'What sex were you assigned at birth?',
+        options: [
+          { value: 0, label: 'Male' },
+          { value: 1, label: 'Female', desc: 'Women have ~65% of Alzheimer\'s diagnoses' },
+          { value: 0, label: 'Prefer not to say' },
+        ]
+      },
+      {
+        id: 'education',
+        type: 'radio',
+        text: 'What is your highest level of education?',
+        hint: 'Higher education builds cognitive reserve, which may delay symptoms.',
+        options: [
+          { value: 3, label: 'Less than high school' },
+          { value: 2, label: 'High school diploma / GED' },
+          { value: 1, label: 'Some college or vocational' },
+          { value: 0, label: 'Bachelor\'s degree or higher' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'family',
+    title: 'Family & Medical History',
+    icon: '🧬',
+    color: '#7c3aed',
+    bg: '#faf5ff',
+    questions: [
+      {
+        id: 'family_history',
+        type: 'radio',
+        text: 'Has a first-degree relative (parent, sibling) been diagnosed with dementia or Alzheimer\'s?',
+        options: [
+          { value: 0, label: 'No', desc: 'No known family history' },
+          { value: 2, label: 'Yes — one relative' },
+          { value: 4, label: 'Yes — two or more relatives' },
+          { value: 1, label: 'Unsure / Unknown' },
+        ]
+      },
+      {
+        id: 'head_injury',
+        type: 'radio',
+        text: 'Have you ever had a significant head injury or concussion?',
+        hint: 'Repeated head injuries are associated with CTE and increased dementia risk.',
+        options: [
+          { value: 0, label: 'No head injuries' },
+          { value: 1, label: 'One mild concussion (recovered fully)' },
+          { value: 3, label: 'Moderate traumatic brain injury' },
+          { value: 4, label: 'Severe head injury or multiple concussions' },
+        ]
+      },
+      {
+        id: 'stroke',
+        type: 'radio',
+        text: 'Have you ever had a stroke or TIA (mini-stroke)?',
+        options: [
+          { value: 0, label: 'No' },
+          { value: 4, label: 'Yes — one or more strokes' },
+          { value: 2, label: 'Yes — TIA only' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'cardiovascular',
+    title: 'Cardiovascular & Metabolic Health',
+    icon: '❤️',
+    color: '#dc2626',
+    bg: '#fff5f5',
+    questions: [
+      {
+        id: 'hypertension',
+        type: 'radio',
+        text: 'Do you have or have you been treated for high blood pressure (hypertension)?',
+        hint: 'Midlife hypertension is one of the strongest modifiable dementia risk factors.',
+        options: [
+          { value: 0, label: 'No, blood pressure is normal' },
+          { value: 1, label: 'Borderline / pre-hypertension' },
+          { value: 2, label: 'Yes — well controlled with medication' },
+          { value: 3, label: 'Yes — not well controlled' },
+        ]
+      },
+      {
+        id: 'diabetes',
+        type: 'radio',
+        text: 'Have you been diagnosed with diabetes or prediabetes?',
+        options: [
+          { value: 0, label: 'No' },
+          { value: 1, label: 'Prediabetes' },
+          { value: 2, label: 'Type 2 diabetes — well managed' },
+          { value: 3, label: 'Type 2 diabetes — poorly managed' },
+          { value: 3, label: 'Type 1 diabetes' },
+        ]
+      },
+      {
+        id: 'cholesterol',
+        type: 'radio',
+        text: 'Do you have high cholesterol?',
+        options: [
+          { value: 0, label: 'No, normal levels' },
+          { value: 1, label: 'Borderline high' },
+          { value: 2, label: 'Yes — treated and controlled' },
+          { value: 2, label: 'Yes — untreated or uncontrolled' },
+        ]
+      },
+      {
+        id: 'obesity',
+        type: 'radio',
+        text: 'How would you describe your weight status?',
+        options: [
+          { value: 0, label: 'Normal/healthy weight (BMI 18.5–24.9)' },
+          { value: 1, label: 'Overweight (BMI 25–29.9)' },
+          { value: 2, label: 'Obese (BMI 30+)' },
+          { value: 0, label: 'Underweight (BMI <18.5)' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'lifestyle',
+    title: 'Lifestyle Habits',
+    icon: '🏃',
+    color: '#059669',
+    bg: '#f0fdf4',
+    questions: [
+      {
+        id: 'exercise',
+        type: 'radio',
+        text: 'How much moderate aerobic exercise do you get per week?',
+        hint: 'Brisk walking, cycling, swimming, etc.',
+        options: [
+          { value: 0, label: '150+ minutes', desc: 'Meets WHO recommendations' },
+          { value: 1, label: '75–149 minutes', desc: 'Getting close' },
+          { value: 2, label: '30–74 minutes', desc: 'Below recommended levels' },
+          { value: 3, label: 'Under 30 minutes', desc: 'Significantly sedentary' },
+          { value: 3, label: 'Almost never / none' },
+        ]
+      },
+      {
+        id: 'diet',
+        type: 'radio',
+        text: 'How would you describe your typical diet?',
+        options: [
+          { value: 0, label: 'Mostly Mediterranean/MIND diet', desc: 'Fish, olive oil, vegetables, whole grains' },
+          { value: 1, label: 'Balanced but not specifically brain-healthy' },
+          { value: 2, label: 'Mixed — some healthy, some processed foods' },
+          { value: 3, label: 'Mostly fast food / highly processed' },
+        ]
+      },
+      {
+        id: 'sleep',
+        type: 'radio',
+        text: 'How many hours of sleep do you typically get per night?',
+        options: [
+          { value: 0, label: '7–9 hours', desc: 'Optimal range' },
+          { value: 1, label: '6–7 hours' },
+          { value: 2, label: 'Less than 6 hours', desc: 'Increases amyloid accumulation' },
+          { value: 2, label: 'More than 9 hours', desc: 'May indicate underlying health issues' },
+        ]
+      },
+      {
+        id: 'smoking',
+        type: 'radio',
+        text: 'What is your smoking history?',
+        options: [
+          { value: 0, label: 'Never smoked' },
+          { value: 1, label: 'Former smoker (quit 5+ years ago)' },
+          { value: 2, label: 'Former smoker (quit under 5 years ago)' },
+          { value: 3, label: 'Current smoker' },
+        ]
+      },
+      {
+        id: 'alcohol',
+        type: 'radio',
+        text: 'How much alcohol do you typically consume?',
+        options: [
+          { value: 0, label: 'None / Rarely (< 1 drink/week)' },
+          { value: 0, label: 'Light (1–7 drinks/week)' },
+          { value: 2, label: 'Moderate (8–14 drinks/week)' },
+          { value: 3, label: 'Heavy (15+ drinks/week)' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'cognitive',
+    title: 'Cognitive & Mental Activity',
+    icon: '🧩',
+    color: '#d97706',
+    bg: '#fffbeb',
+    questions: [
+      {
+        id: 'mental_activity',
+        type: 'radio',
+        text: 'How often do you engage in mentally challenging activities?',
+        hint: 'Reading, puzzles, learning new skills, strategy games, etc.',
+        options: [
+          { value: 0, label: 'Daily', desc: 'Strong cognitive reserve building' },
+          { value: 1, label: 'A few times a week' },
+          { value: 2, label: 'Once a week or less' },
+          { value: 3, label: 'Rarely or never' },
+        ]
+      },
+      {
+        id: 'social_engagement',
+        type: 'radio',
+        text: 'How would you describe your social life?',
+        hint: 'Social isolation doubles dementia risk.',
+        options: [
+          { value: 0, label: 'Highly socially active', desc: 'Regular meaningful interactions' },
+          { value: 1, label: 'Moderately social' },
+          { value: 2, label: 'Limited social contact' },
+          { value: 3, label: 'Often isolated or lonely' },
+        ]
+      },
+      {
+        id: 'continued_learning',
+        type: 'radio',
+        text: 'Are you currently learning something new? (language, skill, instrument, course)',
+        options: [
+          { value: 0, label: 'Yes, actively learning something new' },
+          { value: 1, label: 'Occasionally try new things' },
+          { value: 2, label: 'Not currently, but interested' },
+          { value: 2, label: 'No, my routine is mostly fixed' },
+        ]
+      },
+      {
+        id: 'hearing',
+        type: 'radio',
+        text: 'Do you have hearing difficulties?',
+        hint: 'Untreated hearing loss is the single largest modifiable dementia risk factor.',
+        options: [
+          { value: 0, label: 'No hearing difficulties' },
+          { value: 1, label: 'Mild hearing loss, no aids needed' },
+          { value: 2, label: 'Moderate hearing loss — using hearing aids' },
+          { value: 3, label: 'Significant hearing loss — not using aids' },
+        ]
+      },
+    ]
+  },
+  {
+    id: 'mental_health',
+    title: 'Mental Health & Wellbeing',
+    icon: '😊',
+    color: '#0891b2',
+    bg: '#ecfeff',
+    questions: [
+      {
+        id: 'depression',
+        type: 'radio',
+        text: 'Over the past few months, how often have you felt depressed, hopeless, or without interest in activities?',
+        hint: 'Depression raises dementia risk by ~65% and is also a very treatable condition.',
+        options: [
+          { value: 0, label: 'Rarely or never' },
+          { value: 1, label: 'Occasionally (a few times a month)' },
+          { value: 2, label: 'Often (a few times a week)' },
+          { value: 3, label: 'Most of the time' },
+        ]
+      },
+      {
+        id: 'stress',
+        type: 'radio',
+        text: 'How would you rate your chronic stress level?',
+        hint: 'Chronic stress elevates cortisol which can damage the hippocampus.',
+        options: [
+          { value: 0, label: 'Low — generally relaxed and in control' },
+          { value: 1, label: 'Moderate — occasional stress' },
+          { value: 2, label: 'High — frequently stressed' },
+          { value: 3, label: 'Very high — overwhelming stress most days' },
+        ]
+      },
+      {
+        id: 'purpose',
+        type: 'radio',
+        text: 'Do you have a strong sense of purpose in daily life?',
+        hint: 'A sense of purpose is strongly associated with slower cognitive decline.',
+        options: [
+          { value: 0, label: 'Yes — life feels very meaningful' },
+          { value: 1, label: 'Mostly yes' },
+          { value: 2, label: 'Somewhat / uncertain' },
+          { value: 2, label: 'No — life feels directionless' },
+        ]
+      },
+      {
+        id: 'self_memory',
+        type: 'radio',
+        text: 'How do you rate your memory and thinking compared to 5 years ago?',
+        options: [
+          { value: 0, label: 'Same or better' },
+          { value: 1, label: 'Slightly worse — normal aging' },
+          { value: 2, label: 'Noticeably worse — forgetting more than expected' },
+          { value: 3, label: 'Significantly worse — concerned about it' },
+        ]
+      },
+    ]
+  }
+];
+
+// Max possible raw score
+const MAX_SCORE = SECTIONS.reduce((total, s) =>
+  total + s.questions.reduce((st, q) => st + Math.max(...q.options.map(o => o.value)), 0)
+, 0);
+
+// ============================================================
+//  STATE
+// ============================================================
+let state = {
+  screen: 'home',
+  currentSection: 0,
+  answers: {},  // {questionId: optionIndex}
+  lastResult: null,
+};
+
+// ============================================================
+//  NAVIGATION
+// ============================================================
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name)?.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-' + name)?.classList.add('active');
+  state.screen = name;
+  if (name === 'history') renderHistory();
+  if (name === 'results' && state.lastResult) renderResults(state.lastResult);
+  window.scrollTo(0, 0);
+}
+
+// ============================================================
+//  ASSESSMENT
+// ============================================================
+function startAssessment() {
+  state.currentSection = 0;
+  state.answers = {};
+  showScreen('assess');
+  renderSection();
+  document.getElementById('nav-assess').classList.add('active');
+  document.getElementById('nav-home').classList.remove('active');
+}
+
+function renderSection() {
+  const sec = SECTIONS[state.currentSection];
+  const total = SECTIONS.length;
+  const pct = Math.round((state.currentSection / total) * 100);
+
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `Section ${state.currentSection + 1} of ${total}`;
+  document.getElementById('progress-pct').textContent = pct + '%';
+
+  document.getElementById('section-header-area').innerHTML = `
+    <div class="card" style="background:${sec.bg};border-color:${sec.color}30;margin-bottom:12px;padding:20px 24px;">
+      <div class="section-header">
+        <div class="section-icon" style="background:${sec.color}20;font-size:24px;">${sec.icon}</div>
+        <div>
+          <div class="section-step" style="color:${sec.color}">Section ${state.currentSection + 1} of ${total}</div>
+          <div style="font-weight:700;font-size:17px;">${sec.title}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  let html = '';
+  sec.questions.forEach((q, qi) => {
+    html += renderQuestion(q, qi);
+  });
+
+  document.getElementById('section-container').innerHTML = html;
+  attachOptionHandlers();
+
+  const btnBack = document.getElementById('btn-back');
+  const btnNext = document.getElementById('btn-next');
+  btnBack.style.display = state.currentSection === 0 ? 'none' : 'flex';
+  btnNext.textContent = state.currentSection === total - 1 ? '✅ View Results' : 'Next →';
+}
+
+function renderQuestion(q, qi) {
+  const answered = state.answers[q.id];
+  let optionsHtml = '';
+
+  if (q.type === 'radio' || q.type === 'checkbox') {
+    q.options.forEach((opt, oi) => {
+      const sel = answered === oi ? 'selected' : '';
+      optionsHtml += `
+        <label class="radio-option ${sel}" data-qid="${q.id}" data-oidx="${oi}">
+          <input type="radio" name="${q.id}" value="${oi}" ${answered === oi ? 'checked' : ''} />
+          <div class="option-indicator"></div>
+          <div class="option-text">
+            <div class="option-label">${opt.label}</div>
+            ${opt.desc ? `<div class="option-desc">${opt.desc}</div>` : ''}
+          </div>
+        </label>
+      `;
+    });
+    return `
+      <div class="card form-group">
+        <div class="form-label">${qi + 1}. ${q.text}</div>
+        ${q.hint ? `<div class="form-hint">${q.hint}</div>` : ''}
+        <div class="radio-group" style="margin-top:10px;">${optionsHtml}</div>
+      </div>
+    `;
+  }
+  return '';
+}
+
+function attachOptionHandlers() {
+  document.querySelectorAll('.radio-option').forEach(el => {
+    el.addEventListener('click', () => {
+      const qid = el.dataset.qid;
+      const oidx = parseInt(el.dataset.oidx);
+      state.answers[qid] = oidx;
+      document.querySelectorAll(`.radio-option[data-qid="${qid}"]`).forEach(e => e.classList.remove('selected'));
+      el.classList.add('selected');
+    });
+  });
+}
+
+function nextSection() {
+  const sec = SECTIONS[state.currentSection];
+  const unanswered = sec.questions.filter(q => state.answers[q.id] === undefined);
+  if (unanswered.length > 0) {
+    alert(`Please answer all ${unanswered.length} question(s) before continuing.`);
+    return;
+  }
+  if (state.currentSection < SECTIONS.length - 1) {
+    state.currentSection++;
+    renderSection();
+    window.scrollTo(0, 0);
+  } else {
+    computeAndShowResults();
+  }
+}
+
+function prevSection() {
+  if (state.currentSection > 0) {
+    state.currentSection--;
+    renderSection();
+    window.scrollTo(0, 0);
+  }
+}
+
+// ============================================================
+//  SCORING
+// ============================================================
+function computeScore() {
+  let rawTotal = 0;
+  let sectionScores = {};
+
+  SECTIONS.forEach(sec => {
+    let secRaw = 0;
+    let secMax = 0;
+    sec.questions.forEach(q => {
+      const idx = state.answers[q.id];
+      if (idx !== undefined) {
+        secRaw += q.options[idx].value;
+      }
+      secMax += Math.max(...q.options.map(o => o.value));
+    });
+    sectionScores[sec.id] = { raw: secRaw, max: secMax, pct: secMax > 0 ? Math.round((secRaw / secMax) * 100) : 0 };
+    rawTotal += secRaw;
+  });
+
+  const score = Math.round((rawTotal / MAX_SCORE) * 100);
+  return { score, sectionScores, rawTotal };
+}
+
+function getRiskLevel(score) {
+  if (score <= 30) return { level: 'Low', color: '#10b981', bg: '#d1fae5', text: '#065f46', cssClass: 'risk-low' };
+  if (score <= 60) return { level: 'Moderate', color: '#f59e0b', bg: '#fef3c7', text: '#92400e', cssClass: 'risk-moderate' };
+  return { level: 'High', color: '#ef4444', bg: '#fee2e2', text: '#991b1b', cssClass: 'risk-high' };
+}
+
+function generateRecommendations(sectionScores, answers) {
+  const recs = [];
+
+  // Exercise
+  const exPct = sectionScores['lifestyle']?.pct ?? 0;
+  const exAnswer = answers['exercise'];
+  if (exAnswer !== undefined && exAnswer >= 2) {
+    recs.push({ priority: 'high', icon: '🏃', title: 'Increase physical activity', desc: 'Aim for 150 min/week of moderate aerobic exercise. Even 30 min walks 5×/week dramatically reduces dementia risk.', area: 'lifestyle' });
+  }
+
+  // Hypertension
+  if ((answers['hypertension'] ?? 0) >= 2) {
+    recs.push({ priority: 'high', icon: '💊', title: 'Manage blood pressure', desc: 'Consult your doctor about blood pressure control. Hypertension in midlife is the strongest modifiable risk factor.', area: 'cardiovascular' });
+  }
+
+  // Sleep
+  if ((answers['sleep'] ?? 0) >= 2) {
+    recs.push({ priority: 'high', icon: '😴', title: 'Improve sleep quality', desc: 'Target 7–9 hours nightly. Poor sleep prevents amyloid clearance from the brain. Consider a sleep study if needed.', area: 'lifestyle' });
+  }
+
+  // Depression
+  if ((answers['depression'] ?? 0) >= 2) {
+    recs.push({ priority: 'high', icon: '🧠', title: 'Address depression or low mood', desc: 'Depression raises dementia risk ~65%. Speak with a healthcare provider — treatment significantly reduces this risk.', area: 'mental_health' });
+  }
+
+  // Hearing
+  if ((answers['hearing'] ?? 0) >= 2) {
+    recs.push({ priority: 'high', icon: '👂', title: 'Treat hearing loss', desc: 'Get a hearing assessment. Using hearing aids when needed is the single largest modifiable risk factor intervention.', area: 'cognitive' });
+  }
+
+  // Smoking
+  if ((answers['smoking'] ?? 0) >= 2) {
+    recs.push({ priority: 'high', icon: '🚭', title: 'Quit smoking', desc: 'Smoking nearly doubles dementia risk. Quitting at any age reduces risk. Ask your doctor about cessation support.', area: 'lifestyle' });
+  }
+
+  // Diet
+  if ((answers['diet'] ?? 0) >= 2) {
+    recs.push({ priority: 'medium', icon: '🥦', title: 'Adopt a brain-healthy diet', desc: 'Follow the MIND or Mediterranean diet. Eat leafy greens daily, fish 2×/week, and limit ultra-processed foods.', area: 'lifestyle' });
+  }
+
+  // Social engagement
+  if ((answers['social_engagement'] ?? 0) >= 2) {
+    recs.push({ priority: 'medium', icon: '👥', title: 'Build social connections', desc: 'Social isolation doubles dementia risk. Join clubs, volunteer, or schedule regular social activities.', area: 'cognitive' });
+  }
+
+  // Diabetes
+  if ((answers['diabetes'] ?? 0) >= 2) {
+    recs.push({ priority: 'medium', icon: '🩸', title: 'Manage blood sugar', desc: 'Work with your doctor to improve glycemic control. Poor blood sugar management damages brain vasculature.', area: 'cardiovascular' });
+  }
+
+  // Mental stimulation
+  if ((answers['mental_activity'] ?? 0) >= 2) {
+    recs.push({ priority: 'medium', icon: '🧩', title: 'Increase cognitive stimulation', desc: 'Engage in daily mentally challenging activities — reading, puzzles, learning a skill or language.', area: 'cognitive' });
+  }
+
+  // Stress
+  if ((answers['stress'] ?? 0) >= 2) {
+    recs.push({ priority: 'medium', icon: '🧘', title: 'Reduce chronic stress', desc: 'Chronic cortisol damages the hippocampus. Practice mindfulness, meditation, or stress management techniques.', area: 'mental_health' });
+  }
+
+  // Alcohol
+  if ((answers['alcohol'] ?? 0) >= 2) {
+    recs.push({ priority: 'medium', icon: '🍷', title: 'Reduce alcohol intake', desc: 'Heavy drinking accelerates brain atrophy. Aim for no more than 1 standard drink/day, or abstain entirely.', area: 'lifestyle' });
+  }
+
+  // Continued learning
+  if ((answers['continued_learning'] ?? 0) >= 2) {
+    recs.push({ priority: 'low', icon: '📚', title: 'Start learning something new', desc: 'Learn a language, instrument, or skill. New learning builds neural pathways and cognitive reserve.', area: 'cognitive' });
+  }
+
+  // Purpose
+  if ((answers['purpose'] ?? 0) >= 2) {
+    recs.push({ priority: 'low', icon: '🌟', title: 'Cultivate a sense of purpose', desc: 'Having meaning and goals is linked to slower cognitive decline. Volunteer, mentor, or pursue passion projects.', area: 'mental_health' });
+  }
+
+  // Always add some positive rec if low risk
+  if (recs.length < 2) {
+    recs.push({ priority: 'low', icon: '✅', title: 'Maintain your healthy habits', desc: 'Your risk profile looks good! Continue regular exercise, good sleep, and social engagement to protect cognitive health.', area: 'lifestyle' });
+    recs.push({ priority: 'low', icon: '📅', title: 'Schedule regular cognitive check-ins', desc: 'Reassess every 6–12 months and discuss preventive strategies with your doctor during annual check-ups.', area: 'general' });
+  }
+
+  return recs.slice(0, 8);
+}
+
+// ============================================================
+//  RENDER RESULTS
+// ============================================================
+function computeAndShowResults() {
+  const { score, sectionScores } = computeScore();
+  const risk = getRiskLevel(score);
+  const recs = generateRecommendations(sectionScores, state.answers);
+
+  state.lastResult = { score, sectionScores, risk, recs, answers: {...state.answers}, date: new Date().toISOString() };
+  renderResults(state.lastResult);
+  showScreen('results');
+}
+
+function renderResults(result) {
+  const { score, sectionScores, risk, recs } = result;
+
+  document.getElementById('results-header').style.background =
+    `linear-gradient(135deg, ${risk.color} 0%, ${risk.color}cc 100%)`;
+
+  // Gauge arc
+  drawGauge(score, risk.color);
+
+  document.getElementById('risk-score-display').textContent = score;
+  document.getElementById('risk-score-display').style.color = risk.color;
+  document.getElementById('risk-level-display').innerHTML =
+    `<span class="risk-level-badge ${risk.cssClass}" style="font-size:18px;">${risk.level} Risk</span>`;
+
+  const summaries = {
+    Low: 'Your risk profile suggests relatively low risk for age-related memory loss. Keep up healthy habits and reassess regularly.',
+    Moderate: 'Your responses indicate several modifiable risk factors. Taking action now can significantly reduce your long-term risk.',
+    High: 'Multiple significant risk factors were identified. We strongly recommend discussing these with a healthcare professional and making targeted lifestyle changes.'
+  };
+  document.getElementById('risk-summary').textContent = summaries[risk.level];
+
+  // Factor breakdown
+  const secLabels = { demographics:'Demographics', family:'Family/Medical', cardiovascular:'Cardiovascular', lifestyle:'Lifestyle', cognitive:'Cognitive Activity', mental_health:'Mental Health' };
+  let breakdownHtml = '';
+  SECTIONS.forEach(sec => {
+    const s = sectionScores[sec.id];
+    const barColor = s.pct > 60 ? '#ef4444' : s.pct > 30 ? '#f59e0b' : '#10b981';
+    breakdownHtml += `
+      <div class="factor-bar-row">
+        <div class="factor-bar-label">${sec.icon} ${secLabels[sec.id]}</div>
+        <div class="factor-bar-track">
+          <div class="factor-bar-fill" style="width:${s.pct}%;background:${barColor};"></div>
+        </div>
+        <div class="factor-bar-val">${s.pct}%</div>
+      </div>
+    `;
+  });
+  document.getElementById('factor-breakdown').innerHTML = breakdownHtml;
+
+  // Recommendations
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  const sorted = [...recs].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+  let recHtml = '';
+  sorted.forEach(r => {
+    recHtml += `
+      <div class="recommendation-item rec-priority-${r.priority}">
+        <div class="rec-icon">${r.icon}</div>
+        <div>
+          <div class="rec-title">${r.title}</div>
+          <div class="rec-desc">${r.desc}</div>
+        </div>
+      </div>
+    `;
+  });
+  document.getElementById('recommendations').innerHTML = recHtml;
+}
+
+function drawGauge(score, color) {
+  const canvas = document.getElementById('gauge-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H - 10;
+  const r = Math.min(W, H * 2) * 0.42;
+  const startAngle = Math.PI;
+  const endAngle = 2 * Math.PI;
+
+  // Background arc
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, startAngle, endAngle);
+  ctx.strokeStyle = '#e2e8f0';
+  ctx.lineWidth = 16;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Color gradient segments
+  const segments = [
+    { from: 0, to: 30, color: '#10b981' },
+    { from: 30, to: 60, color: '#f59e0b' },
+    { from: 60, to: 100, color: '#ef4444' },
+  ];
+  segments.forEach(seg => {
+    const a1 = startAngle + (seg.from / 100) * Math.PI;
+    const a2 = startAngle + (seg.to / 100) * Math.PI;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, a1, a2);
+    ctx.strokeStyle = seg.color;
+    ctx.lineWidth = 16;
+    ctx.lineCap = 'butt';
+    ctx.stroke();
+  });
+
+  // Needle
+  const angle = startAngle + (score / 100) * Math.PI;
+  const needleLen = r - 8;
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(cx + needleLen * Math.cos(angle), cy + needleLen * Math.sin(angle));
+  ctx.strokeStyle = '#1e293b';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Center dot
+  ctx.beginPath();
+  ctx.arc(cx, cy, 6, 0, 2 * Math.PI);
+  ctx.fillStyle = '#1e293b';
+  ctx.fill();
+}
+
+// ============================================================
+//  HISTORY
+// ============================================================
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem('memoryRiskHistory') || '[]'); } catch { return []; }
+}
+
+function saveResult() {
+  if (!state.lastResult) return;
+  const history = loadHistory();
+  const entry = {
+    id: Date.now(),
+    date: state.lastResult.date || new Date().toISOString(),
+    score: state.lastResult.score,
+    risk: state.lastResult.risk.level,
+  };
+  history.unshift(entry);
+  if (history.length > 20) history.pop();
+  localStorage.setItem('memoryRiskHistory', JSON.stringify(history));
+  document.getElementById('save-confirmation').style.display = 'block';
+  setTimeout(() => { document.getElementById('save-confirmation').style.display = 'none'; }, 3000);
+}
+
+function renderHistory() {
+  const history = loadHistory();
+  const listEl = document.getElementById('history-list');
+  const emptyEl = document.getElementById('history-empty');
+  const trendCard = document.getElementById('history-trend-card');
+
+  if (history.length === 0) {
+    listEl.innerHTML = '';
+    emptyEl.style.display = 'block';
+    trendCard.style.display = 'none';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  trendCard.style.display = history.length >= 2 ? 'block' : 'none';
+
+  if (history.length >= 2) {
+    const oldest = history[history.length - 1];
+    const newest = history[0];
+    const diff = newest.score - oldest.score;
+    document.getElementById('history-trend-text').textContent =
+      diff < 0 ? `Great news — your score improved by ${Math.abs(diff)} points since your first assessment.`
+      : diff > 0 ? `Your score has increased by ${diff} points. Review recommendations for areas to improve.`
+      : 'Your score is stable since your first assessment.';
+    drawTrend(history.slice().reverse());
+  }
+
+  let html = '';
+  history.forEach(entry => {
+    const risk = getRiskLevel(entry.score);
+    const d = new Date(entry.date);
+    const dateStr = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    html += `
+      <div class="history-item">
+        <div class="history-score" style="background:${risk.bg};color:${risk.color};">${entry.score}</div>
+        <div class="history-info">
+          <div class="history-label" style="color:${risk.color};">${risk.level} Risk</div>
+          <div class="history-date">${dateStr} at ${timeStr}</div>
+        </div>
+        <span style="color:var(--text-muted);font-size:20px;">›</span>
+      </div>
+    `;
+  });
+
+  listEl.innerHTML = html;
+}
+
+function drawTrend(history) {
+  const canvas = document.getElementById('trend-canvas');
+  if (!canvas || history.length < 2) return;
+  canvas.width = canvas.offsetWidth || 600;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const scores = history.map(h => h.score);
+  const minS = Math.max(0, Math.min(...scores) - 10);
+  const maxS = Math.min(100, Math.max(...scores) + 10);
+
+  const pad = 20;
+  const pts = scores.map((s, i) => ({
+    x: pad + (i / (scores.length - 1)) * (W - pad * 2),
+    y: H - pad - ((s - minS) / (maxS - minS)) * (H - pad * 2)
+  }));
+
+  // Gradient fill
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, 'rgba(79,70,229,0.2)');
+  grad.addColorStop(1, 'rgba(79,70,229,0)');
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, H);
+  pts.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(pts[pts.length - 1].x, H);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.strokeStyle = '#4f46e5';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Dots
+  pts.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+    ctx.fillStyle = '#4f46e5';
+    ctx.fill();
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+}
+
+// ============================================================
+//  UTILITIES
+// ============================================================
+function printReport() {
+  window.print();
+}
+
+function shareResults() {
+  if (!state.lastResult) return;
+  const { score, risk } = state.lastResult;
+  const text = `My Memory Risk Assessment Score: ${score}/100 (${risk.level} Risk)\nTaken on ${new Date().toLocaleDateString()}\nAssess your risk at: Memory Risk Monitor`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => alert('Summary copied to clipboard!'));
+  } else {
+    prompt('Copy this summary:', text);
+  }
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+function init() {
+  const history = loadHistory();
+  if (history.length > 0) {
+    const banner = document.getElementById('last-assessment-banner');
+    const dateEl = document.getElementById('last-assessment-date');
+    const last = history[0];
+    const risk = getRiskLevel(last.score);
+    banner.style.display = 'block';
+    dateEl.textContent = `Last assessed: ${new Date(last.date).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' })} — Score: ${last.score} (${risk.level} Risk)`;
+  }
+}
+
+init();
+</script>
+</body>
+</html>
